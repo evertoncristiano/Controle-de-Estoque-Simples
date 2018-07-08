@@ -17125,10 +17125,13 @@ class Carbon extends DateTime implements JsonSerializable
     }
     public function __get($name)
     {
-        static $formats = array('year' => 'Y', 'yearIso' => 'o', 'month' => 'n', 'day' => 'j', 'hour' => 'G', 'minute' => 'i', 'second' => 's', 'micro' => 'u', 'dayOfWeek' => 'w', 'dayOfWeekIso' => 'N', 'dayOfYear' => 'z', 'weekOfYear' => 'W', 'daysInMonth' => 't', 'timestamp' => 'U');
+        static $formats = array('year' => 'Y', 'yearIso' => 'o', 'month' => 'n', 'day' => 'j', 'hour' => 'G', 'minute' => 'i', 'second' => 's', 'micro' => 'u', 'dayOfWeek' => 'w', 'dayOfWeekIso' => 'N', 'dayOfYear' => 'z', 'weekOfYear' => 'W', 'daysInMonth' => 't', 'timestamp' => 'U', 'englishDayOfWeek' => 'l', 'shortEnglishDayOfWeek' => 'D', 'englishMonth' => 'F', 'shortEnglishMonth' => 'M', 'localeDayOfWeek' => '%A', 'shortLocaleDayOfWeek' => '%a', 'localeMonth' => '%B', 'shortLocaleMonth' => '%b');
         switch (true) {
             case isset($formats[$name]):
-                return (int) $this->format($formats[$name]);
+                $format = $formats[$name];
+                $method = substr($format, 0, 1) === '%' ? 'formatLocalized' : 'format';
+                $value = $this->{$method}($format);
+                return is_numeric($value) ? (int) $value : $value;
             case $name === 'weekOfMonth':
                 return (int) ceil($this->day / static::DAYS_PER_WEEK);
             case $name === 'weekNumberInMonth':
